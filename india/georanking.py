@@ -3,45 +3,64 @@
 #
 #  Bounding Box for India on PlateCarree scale = [67.0, 98.0, 5.0, 38.0]
 #  Shape file downloaded from : https://www.diva-gis.org/gdata
+#  Data is not included here because of restrictive license
+#
+#  To get disputed areas near Pakistan and China, Old administrative area is
+#  added. Shape file was taken from : https://bit.ly/3aklP75
+
+from typing import Dict
 
 import cartopy.crs as ccrs
 import geopandas
 import matplotlib.pyplot as plt
-import pandas as pd
 from SecretColors import Palette
+from SecretColors.utils import text_color
+
+from india.constants import STATE_COLUMN, JKL_NAME
+from india.model import State
 
 p = Palette()
 
 
-def _draw_state(ax: plt.Axes, data: pd.DataFrame):
-    poly = data['geometry']
-    state = data['NAME_1']
-    # x = poly.centroid.x
-    # y = poly.centroid.y
-    print(state)
-    ax.add_geometries([poly], crs=ccrs.PlateCarree(),
-                      facecolor=p.blue(shade=30),
-                      edgecolor=p.blue(shade=60))
+def _draw_states(ax: plt.Axes, states: Dict[str, State]):
+    for s in states.values():
+        ax.add_geometries([s.shape], crs=ccrs.PlateCarree(),
+                          facecolor=s.color,
+                          edgecolor=p.gray(shade=60))
+        if s.show_label:
+            ax.text(s.label_x, s.label_y, s.name,
+                    transform=ccrs.PlateCarree(),
+                    color=text_color(s.color),
+                    size=8, rotation=s.label_rotation,
+                    ha='center', va='center')
 
-    # ax.text(x, y, state, size=9, ha='center', va='center',
-    #         transform=ccrs.PlateCarree())
+
+def _get_jkl():
+    filename = "data/extra/Indian_States.shp"
+    df = geopandas.read_file(filename)
+    df = df[df["st_nm"] == "Jammu & Kashmir"].reset_index(drop=True)
+    df = df.rename(columns={"st_nm": STATE_COLUMN})
+    df.iloc[0, 0] = JKL_NAME
+    for _, row in df.iterrows():
+        return State(row)
 
 
 def _fetch_maps():
-    resolution = '10m'
-    category = 'cultural'
-    name = 'admin_1_states_provinces'
+    filename = "data/India/IND_adm1.shp"
+    df = geopandas.read_file(filename)
+    ax = plt.axes(projection=ccrs.PlateCarree())  # type:plt.Axes
+    states = {JKL_NAME: _get_jkl()}
 
-    # shpfilename = shapereader.natural_earth(resolution, category, name)
-    shpfilename = "data/IND_adm1.shp"
-    # read the shapefile using geopandas
-    df = geopandas.read_file(shpfilename)
-    ax = plt.axes(projection=ccrs.PlateCarree())
     for index, row in df.iterrows():
-        _draw_state(ax, row)
+        s = State(row)
+        if s.name != "Jammu and Kashmir":
+            states[s.name] = s
 
+    _draw_states(ax, states)
     ax.set_extent([67.0, 98.0, 5.0, 38.0], crs=ccrs.PlateCarree())
-    plt.show()
+    ax.axis("off")
+    plt.gcf().set_size_inches(7, 7)
+    plt.savefig("plot.png", dpi=300)
 
 
 def run():
