@@ -16,6 +16,8 @@ class State:
         self._geometry = data['geometry']
         self.color = Palette().gray(shade=20)
         self.show_label = True
+        self.mapped_label = self._name
+        self.mapped_value = 0
 
     @property
     def shape(self) -> Union[Polygon, MultiPolygon]:
