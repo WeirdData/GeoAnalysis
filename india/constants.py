@@ -36,7 +36,7 @@ OFFSETS = {
         O_X: 1
     },
     "Goa": {
-        O_X: -1
+        O_X: -3
     },
     "Gujarat": {
         O_Y: 0.5,

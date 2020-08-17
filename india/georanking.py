@@ -18,27 +18,34 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from SecretColors import Palette
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+from SecretColors import Palette, ColorMap
 
 from india.constants import STATE_COLUMN, JKL_NAME
 from india.model import State
+import matplotlib
 
 p = Palette(show_warning=False)
-# colors = [p.ultramarine(), p.yellow(), p.magenta(), p.green(), p.white()]
-# cm = ColorMap(matplotlib, p).from_list(colors)
-cm = matplotlib.cm.get_cmap('tab20c')
+# cm = matplotlib.cm.get_cmap('viridis_r')
+cols = p.ultramarine(no_of_colors=10)
+cols.extend(p.green(no_of_colors=20))
+cols.extend(p.magenta(no_of_colors=20))
+cm = ColorMap(matplotlib, p).from_list(cols, is_qualitative=True)
+TOTAL_POPULATION = 1210569573
 
 
 def _draw_states(ax: plt.Axes, states: Dict[str, State]):
     for s in states.values():
-        color = cm(s.mapped_value / 100)
+        color = cm(s.mapped_value)
         ax.add_geometries([s.shape], crs=ccrs.PlateCarree(),
                           facecolor=color,
                           edgecolor=p.gray(shade=60))
+        tx_color = p.black()
+        if s.name in ["Uttar Pradesh", "Delhi"]:
+            tx_color = p.white()
         if s.show_label:
             ax.text(s.label_x, s.label_y, s.mapped_label,
                     transform=ccrs.PlateCarree(),
+                    color=tx_color,
                     size=8, rotation=s.label_rotation,
                     ha='center', va='center')
 
@@ -74,20 +81,20 @@ def draw_with_mapping(mapping):
     for s in states.values():
         if s.name == JKL_NAME:
             s.mapped_label = mapping["Jammu and Kashmir"][0]
-            s.mapped_value = mapping["Jammu and Kashmir"][1]
+            s.mapped_value = mapping["Jammu and Kashmir"][1] / TOTAL_POPULATION
             continue
         elif s.name == "Daman and Diu":
             continue
         s.mapped_label = mapping[s.name][0]
-        s.mapped_value = mapping[s.name][1]
+        s.mapped_value = mapping[s.name][1] / TOTAL_POPULATION
 
     _draw_states(ax, states)
     norm = mpl.colors.Normalize(vmin=0, vmax=100)
     sm = plt.cm.ScalarMappable(cmap=cm, norm=norm)
     sm.set_array([])
-    cbar = plt.colorbar(sm, ticks=np.linspace(0, 100, 10),
-                        fraction=0.046,
-                        pad=0.04)
+    # cbar = plt.colorbar(sm, ticks=np.linspace(0, 100, 10),
+    #                     fraction=0.046,
+    #                     pad=0.04)
     ax.set_extent([67.0, 98.0, 5.0, 38.0], crs=ccrs.PlateCarree())
     ax.axis("off")
     plt.savefig("plot.png", dpi=300)
@@ -116,10 +123,17 @@ def get_population_mapping():
 
     states = sorted(states, key=lambda x: x[1], reverse=True)
     world = sorted(world, key=lambda x: x[1], reverse=True)
-    world = world[:len(states)]
     mapping = {}
-    for s, w in zip(states, world):
-        mapping[s[0]] = (w[0], s[1] * 100 / w[1])
+    current_state = states[0]
+    for w in world:
+        if current_state[1] >= w[1]:
+            mapping[current_state[0]] = (w[0], current_state[1])
+            try:
+                states.pop(0)
+                current_state = states[0]
+            except IndexError:
+                break
+
     return mapping
 
 
