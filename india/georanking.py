@@ -16,13 +16,11 @@ import geopandas
 import matplotlib
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from SecretColors import Palette, ColorMap
 
 from india.constants import STATE_COLUMN, JKL_NAME
 from india.model import State
-import matplotlib
 
 p = Palette(show_warning=False)
 # cm = matplotlib.cm.get_cmap('viridis_r')

@@ -61,3 +61,33 @@ class State:
     @property
     def name(self) -> str:
         return self._name
+
+
+class StateMap:
+    def __init__(self, name: str, value):
+        self._name = name
+        self.value = value
+
+    def _parse_name(self):
+        if self._name.strip() in OFFSETS.keys():
+            return self._name.strip()
+        else:
+            if self._name in SYNONYM.keys():
+                return SYNONYM[self._name]
+        return None
+
+    @property
+    def name(self) -> str:
+        return self._parse_name()
+
+    @property
+    def is_valid(self) -> bool:
+        return self.name is not None
+
+    def __repr__(self):
+        return f"StateMap({self.name})"
+
+
+class IndianMap:
+    def __init__(self):
+        filename = "data/India/IND_adm1.shp"

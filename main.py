@@ -3,7 +3,7 @@
 #
 #  This files serves as an entry point to other scripts
 
-from india.georanking import run
+from india.stats import run
 
 if __name__ == '__main__':
     run()

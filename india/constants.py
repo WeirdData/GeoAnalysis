@@ -26,11 +26,8 @@ OFFSETS = {
     "Chhattisgarh": {
         O_R: 70
     },
-    "Dadra and Nagar Haveli": {
+    "Dadra and Nagar Haveli\nand Daman and Diu": {
         O_X: -6.5
-    },
-    "Daman and Diu": {
-        O_X: -3
     },
     "Delhi": {
         O_X: 1
@@ -83,7 +80,7 @@ OFFSETS = {
     "Nagaland": {
         O_X: 2.3
     },
-    "Orissa": {},
+    "Odisha": {},
     "Puducherry": {
         O_X: 3
     },
@@ -107,7 +104,7 @@ OFFSETS = {
     "Uttar Pradesh": {
         O_R: -20
     },
-    "Uttaranchal": {
+    "Uttarakhand": {
         O_X: 1.5
     },
     "West Bengal": {
@@ -115,4 +112,13 @@ OFFSETS = {
         O_Y: -0.5
     }
 
+}
+
+SYNONYM = {
+    "Jammu & Kashmir": JKL_NAME,
+    "Orissa": "Odisha",
+    "Uttaranchal": "Uttarakhand",
+    "A & N Islands": "Andaman and Nicobar",
+    "D & N Haveli": "Dadra and Nagar Haveli\nand Daman and Diu",
+    "Delhi (UT)": "Delhi"
 }
