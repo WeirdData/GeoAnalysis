@@ -1,0 +1,84 @@
+States:
+  Andhra Pradesh:
+    code: IN-AP
+  Arunachal Pradesh:
+    code: IN-AR
+  Assam:
+    code: IN-AS
+  Bihar:
+    code: IN-BR
+  Chhattisgarh:
+    code: IN-CT
+  Goa:
+    code: IN-GA
+  Gujarat:
+    code: IN-GJ
+  Haryana:
+    code: IN-HR
+  Himachal Pradesh:
+    code: IN-HP
+  Jharkhand:
+    code: IN-JH
+  Karnataka:
+    code: IN-KA
+  Kerala:
+    code: IN-KL
+  Madhya Pradesh:
+    code: IN-MP
+  Maharashtra:
+    code: IN-MH
+  Manipur:
+    code: IN-MN
+  Meghalaya:
+    code: IN-ML
+  Mizoram:
+    code: IN-MZ
+  Nagaland:
+    code: IN-NL
+  Odisha:
+    code: IN-OR
+  Punjab:
+    code: IN-PB
+  Rajasthan:
+    code: IN-RJ
+  Sikkim:
+    code: IN-SK
+  Tamil Nadu:
+    code: IN-TN
+  Telangana:
+    code: IN-TG
+  Tripura:
+    code: IN-TR
+  Uttar Pradesh:
+    code: IN-UP
+  Uttarakhand:
+    code: IN-UT
+  West Bengal:
+    code: IN-WB
+  Andaman and Nicobar Islands:
+    code: IN-AN
+    short: Andaman and Nicobar
+  Chandigarh:
+    code: IN-CH
+  Dadra and Nagar Haveli and Daman and Diu:
+    code: IN-DD
+    short: DNH and DD
+  Delhi:
+    code: IN-DL
+  Jammu and Kashmir:
+    code: IN-JK
+  Ladakh:
+    code: IN-LK
+  Lakshadweep:
+    code: IN-LD
+  Puducherry:
+    code: IN-PY
+
+# Following is based on various data files.
+# Instead of handling it in code, we can have list of synonymous here
+Synonymous:
+  Orissa: Odisha
+  Uttaranchal: Uttarakhand
+  Jammu & Kashmir: Jammu and Kashmir
+  Andaman and Nicobar: Andaman and Nicobar Islands
+  Dadra and Nagar Haveli: Dadra and Nagar Haveli and Daman and Diu
