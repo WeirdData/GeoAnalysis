@@ -16,17 +16,17 @@
 import cartopy.crs as ccrs
 import geopandas
 import matplotlib
+import matplotlib.animation as animation
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import pandas as pd
 from SecretColors import Palette
-from SecretColors.cmaps import ColorMap, BrewerMap
+from SecretColors.cmaps import ColorMap
 from matplotlib.animation import FuncAnimation
-import matplotlib.animation as animation
-import matplotlib.gridspec as gridspec
 
 p = Palette()
 
-color_list = p.blue(no_of_colors=30, starting_shade=30)
+color_list = p.blue(no_of_colors=20, starting_shade=30, ending_shade=100)
 bm = ColorMap(matplotlib).from_list(color_list, is_qualitative=True)
 
 
@@ -110,83 +110,94 @@ def animate(y, ax, ax2, sub, df, max_rain):
     m = y % 12
     for k in sub.values():
         k.value = None
-    for _, row in year_df.iterrows():
-        sub[row["SUBDIVISION"]].value = row[MONTH[m]] / max_rain
 
+    total_rainfall = 0
+    months = 0
+    for _, row in year_df.iterrows():
+        months += 1
+        value = row[MONTH[m]]
+        total_rainfall += value
+        sub[row["SUBDIVISION"]].value = value / max_rain
+
+    total_rainfall = total_rainfall / months
     ax.clear()
-    ax.annotate(f"{MONTH[m]} {current_year}", (1, 1),
-                fontsize=14,
+    ax.annotate(f"{MONTH[m]} {current_year}", (1, 1.01),
+                fontsize=12,
                 ha="right",
-                color=p.gray(shade=70),
-                fontfamily="IBM Plex Sans",
+                va="top",
+                alpha=0.8,
+                bbox=dict(facecolor=p.red(shade=20), edgecolor='none'),
+                fontfamily="IBM Plex Mono",
                 xycoords='axes fraction')
     draw_map(ax, sub)
+    ax.annotate("Rainfall in Meteorological Subdivisions of India",
+                (0.5, 1.1),
+                fontsize=14,
+                ha="center",
+                va="center",
+                color=p.gray(shade=90),
+                fontfamily="IBM Plex Sans",
+                xycoords='axes fraction')
+
     ax.set_extent([67.0, 98.0, 5.0, 38.0], crs=ccrs.PlateCarree())
     ax.axis("off")
-    set_bottom_bar(ax2, m, current_year)
+    set_bottom_bar(ax2, m, current_year, total_rainfall)
 
 
-def set_bottom_bar(ax2, current, year):
+def set_bottom_bar(ax2, current, year, total_rainfall):
     """
     Function to set up bottom month bar
 
+    :param total_rainfall: Total rainfall for the year
     :param ax2: Axes
     :param current: Current month
     :param year: Current year
     """
-    ax2.clear()
-    data = [0.2 for _ in range(0, 12)]
-    colors = [p.gray_blue(shade=10) for _ in data]
-    colors[current] = p.gray_blue(shade=30)
-    colors[current - 1] = p.gray_blue(shade=20)
-    n = current + 1
-    if n > 11:
-        n = 0
-    colors[n] = p.gray_blue(shade=20)
-    ax2.set_xlim(-1, 12)
-    ax2.set_ylim(0, 0.8)
-    ax2.bar(range(len(data)), data, color=colors)
-    ax2.set_xticks(list(range(len(data))))
-    ax2.set_xticklabels(list(MONTH.values()),
+    # ax2.clear()
+    ax2.set_xlim(1, 115)
+    # ax2.set_ylim(0, 1)
+    ax2.bar(year - 1900, total_rainfall, color=p.red(shade=30), width=1)
+
+    labels = [0, 25, 50, 75, 100, 115]
+    ax2.set_xticks(labels)
+    ax2.set_xticklabels([x + 1900 for x in labels],
                         fontfamily="IBM Plex Sans",
                         fontweight="light")
-    # ax2.axis("off")
+
     ax2.spines['top'].set_visible(False)
     ax2.spines['right'].set_visible(False)
-    ax2.spines['left'].set_visible(False)
-    ax2.spines['bottom'].set_visible(False)
-    ax2.set_yticks([])
-    ax2.annotate(f"Rainfall in Meteorological Subdivisions of India ({year})",
-                 (0.5, 0.5),
-                 fontsize=13,
-                 fontfamily="IBM Plex Sans",
-                 xycoords='axes fraction', ha="center")
-
-    ax2.annotate("Colors are normalized to highest rainfall amount.\nDarker "
-                 "color represents higher rainfall. (Suratekar R. (c) 2020)",
-                 (0.95, -0.8),
-                 fontsize=9,
-                 color=p.gray(),
-                 fontfamily="IBM Plex Sans",
-                 xycoords="axes fraction", ha="right")
+    ax2.set_xlabel("Year", fontfamily="IBM Plex Sans")
+    ax2.set_ylabel("Rainfall (mm)", fontsize=9, labelpad=2,
+                   fontfamily="IBM Plex Sans", color=p.gray())
+    ax2.grid(axis="y", zorder=0, ls="--", color=p.gray())
 
 
 def run():
     fig = plt.figure(figsize=(8, 8))
-    gs = gridspec.GridSpec(6, 6)
-    ax = fig.add_subplot(gs[:-1, :], projection=ccrs.PlateCarree())
-    ax2 = fig.add_subplot(gs[-1, :])
+    gs = gridspec.GridSpec(8, 8)
+    ax = fig.add_subplot(gs[:-2, :], projection=ccrs.PlateCarree())
+    ax2 = fig.add_subplot(gs[-2, :])
+    ax3 = fig.add_subplot(gs[-1, :])
     sub = generate_divisions()
     df = pd.read_csv("data/rainfall.csv")
     max_rain = df.iloc[:, 2:14]
     max_rain = max(max_rain.max().values)
+
+    ax3.axis("off")
+    ax3.annotate("Colors are normalized to highest rainfall amount.\nDarker "
+                 "color represents higher rainfall. (Suratekar R. (c) 2020)",
+                 (1, -0.1),
+                 fontsize=9,
+                 color=p.gray(),
+                 fontfamily="IBM Plex Sans",
+                 xycoords="axes fraction", ha="right")
 
     ani_object = FuncAnimation(fig=fig,
                                func=animate,
                                frames=range(0, 1380),
                                fargs=(ax, ax2, sub, df, max_rain),
                                repeat=False,
-                               interval=10)
+                               interval=1)
 
     # norm = matplotlib.colors.Normalize(vmin=0, vmax=1)
     # mappable = matplotlib.cm.ScalarMappable(norm=norm, cmap=bm)
@@ -196,5 +207,5 @@ def run():
     ffmpeg = animation.writers['ffmpeg']
     writer = ffmpeg(metadata=dict(artist='Me'))
 
-    plt.show()
-    # ani_object.save('rainfall.mp4', writer=writer)
+    # plt.show()
+    ani_object.save('rainfall.mp4', writer=writer)
