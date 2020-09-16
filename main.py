@@ -3,7 +3,7 @@
 #
 #  This files serves as an entry point to other scripts
 
-from india.rainfall import run
+from world.running import run
 
 if __name__ == '__main__':
     run()
