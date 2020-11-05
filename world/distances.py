@@ -107,7 +107,7 @@ def india_seul():
     ax.text(lon + 2, lat, "Kibithoo, India", transform=crs.PlateCarree(),
             zorder=60,
             bbox=dict(facecolor=palette.white()), ha="left")
-    ax.text(cape[0] + 2, cape[1], "Cape Comorin, India",
+    ax.text(cape[0] + 2, cape[1], "Kanyakumari, India",
             transform=crs.PlateCarree(), zorder=60,
             va="top", ha="left", bbox=dict(facecolor=palette.white()))
 
