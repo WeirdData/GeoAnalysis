@@ -3,7 +3,7 @@
 #
 #  This files serves as an entry point to other scripts
 
-from world.bbt import run
+from world.tea import run
 
 if __name__ == '__main__':
     run()
