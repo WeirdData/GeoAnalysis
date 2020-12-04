@@ -3,7 +3,7 @@
 #
 #  This files serves as an entry point to other scripts
 
-from world.tea import run
+from world.gdp_compare import run
 
 if __name__ == '__main__':
     run()
