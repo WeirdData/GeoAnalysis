@@ -3,7 +3,7 @@
 #
 #  This files serves as an entry point to other scripts
 
-from world.mgroad import run
+from india.gdp import run
 
 if __name__ == '__main__':
     run()

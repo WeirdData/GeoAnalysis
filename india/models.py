@@ -11,14 +11,15 @@
 import os
 import warnings
 from typing import Dict
+from typing import Union
 
 import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 import geopandas
 import matplotlib.pyplot as plt
 from SecretColors import Palette
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon
-from typing import Union
 
 palette = Palette()
 
@@ -32,6 +33,7 @@ class State:
         self.meta = meta
         self.geometry = None  # type: Union[Polygon, MultiPolygon]
         self.color = palette.ultramarine(shade=40)
+        self.edge = palette.gray(shade=80)
         self._label = None
         self.value = 0
         self.show_label = False
@@ -157,7 +159,7 @@ class IndianMap:
     def generate_data(self):
         df = geopandas.read_file(self.filename)
         self._adjust_jk(df)
-        df[self.COL_COLOR] = palette.ultramarine(shade=40)
+        df[self.COL_COLOR] = palette.blue(shade=40)
         self._df = df
 
     def generate_states(self, meta=None):
@@ -182,12 +184,18 @@ class IndianMap:
             self._draw_empty(self.df)
             self.df.plot(color=self.df[self.COL_COLOR])
         else:
+            self.ax.add_feature(cfeature.BORDERS, alpha=0.5)
+            self.ax.add_feature(cfeature.COASTLINE, alpha=0.5)
+            self.ax.add_feature(cfeature.OCEAN, alpha=0.2)
+            self.ax.add_feature(cfeature.LAND, alpha=0.2)
             for s in self.states.values():
                 self.ax.add_geometries([s.geometry],
                                        fc=s.color,
+                                       ec=s.edge,
+                                       lw=0.5,
                                        crs=ccrs.PlateCarree())
-                self.ax.set_extent(self.extent,
-                                   crs=ccrs.PlateCarree())
                 if s.show_label:
                     self.ax.text(s.x, s.y, s.label,
                                  ha="center", va="center")
+            self.ax.set_extent(self.extent,
+                               crs=ccrs.PlateCarree())
