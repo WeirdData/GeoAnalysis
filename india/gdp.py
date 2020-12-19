@@ -42,9 +42,8 @@ def draw_map():
     mp = IndianMap()
     sts = mp.generate_states(meta)
     data = get_data()
-    data = [(x, data[x]) for x in data]
-    data = sorted(data, key=lambda x: x[1], reverse=True)
-    data = [x[0] for x in data[:6]]
+    data = split_states(data)
+    data = [x[0] for x in data[:11]]
     map_data(data, sts, mp.ax)
     mp.draw()
     plt.savefig("plot.png", dpi=150)
@@ -52,13 +51,26 @@ def draw_map():
 
 
 def split_states(data):
-    number = 6
-    tmp = [(x, data[x]) for x in data]
+    pop = {}
+
+    def _remove(x):
+        return int("".join([x for x in list(x) if str(x).isnumeric()]))
+
+    with open("data/states.csv") as f:
+        next(f)
+        next(f)
+        for row in csv.reader(f):
+            pop[row[1].strip()] = _remove(row[2]) / 1000
+
+    number = 11
+    tmp = [(x, data[x] / pop[x]) for x in data]
     tmp = sorted(tmp, key=lambda x: x[1], reverse=True)
     top_list = [x[1] for x in tmp[:number]]
     others = [x[1] for x in tmp[number:]]
     print(sum(top_list), sum(others))
-    print(sum(top_list)/(sum([sum(top_list), sum(others)])))
+    print(sum(top_list) * 100 / (sum([sum(top_list), sum(others)])))
+    print(tmp)
+    return tmp
 
 
 def run():
