@@ -3,7 +3,7 @@
 #
 #  This files serves as an entry point to other scripts
 
-from world.happiness import run
+from world.maleria import run
 
 if __name__ == '__main__':
     run()
