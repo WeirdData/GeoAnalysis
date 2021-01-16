@@ -3,7 +3,7 @@
 #
 #  This files serves as an entry point to other scripts
 
-from world.maleria import run
+from india.female_cm import run
 
 if __name__ == '__main__':
     run()
