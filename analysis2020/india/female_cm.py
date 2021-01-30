@@ -3,7 +3,6 @@
 #  Web: https://github.com/WeirdData/GeoAnalysis
 #
 #  Data Source: https://en.wikipedia.org/wiki/List_of_female_Indian_chief_ministers
-import csv
 import yaml
 
 from india.models import *

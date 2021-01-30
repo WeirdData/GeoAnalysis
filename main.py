@@ -3,7 +3,7 @@
 #
 #  This files serves as an entry point to other scripts
 
-from india.female_cm import run
+from analysis2021.drinkingwater import run
 
 if __name__ == '__main__':
     run()
